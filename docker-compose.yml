@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ../back-end/demo/demo
+    container_name: backend-container
+    ports:
+      - "8081:8081"
+    networks:
+      - mynet
+
+  frontend:
+    build:
+      context: ../financial_app/my-banking-app
+    container_name: frontend-container
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    driver: bridge
