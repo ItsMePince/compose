@@ -5,7 +5,7 @@ on:
     branches: [ "**" ]
     paths:
       - "docker-compose.yml"
-      - "financial_app/**"
+      - "FINANCIAL_APP/**"
       - ".github/workflows/compose-ci.yml"
   pull_request:
     branches: [ "**" ]
