@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: ${BACKEND_CONTEXT:-./back-end/demo/demo}
+      context: ./back-end/demo/demo
       dockerfile: Dockerfile
     container_name: backend-container
     ports:
@@ -11,7 +11,7 @@ services:
 
   frontend:
     build:
-      context: ${FRONTEND_CONTEXT:-./FINANCIAL_APP/my-banking-app}
+      context: ./FINANCIAL_APP/my-banking-app
       dockerfile: Dockerfile
     container_name: frontend-container
     ports:
