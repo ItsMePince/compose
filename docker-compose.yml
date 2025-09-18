@@ -10,7 +10,7 @@ services:
 
   frontend:
     build:
-      context: ./FINANCIAL_APP/my-banking-app   
+      context: ./FINANCIAL_APP/my-banking-app
       dockerfile: Dockerfile
     container_name: frontend-container
     ports:
