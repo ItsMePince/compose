@@ -1,9 +1,8 @@
-version: "3.9"
-
 services:
   backend:
     build:
-      context: ./back-end/demo/demo
+      context: ${BACKEND_CONTEXT:-./back-end/demo/demo}
+      dockerfile: Dockerfile
     container_name: backend-container
     ports:
       - "8081:8081"
@@ -12,7 +11,8 @@ services:
 
   frontend:
     build:
-      context: ./FINANCIAL_APP/my-banking-app
+      context: ${FRONTEND_CONTEXT:-./FINANCIAL_APP/my-banking-app}
+      dockerfile: Dockerfile
     container_name: frontend-container
     ports:
       - "3000:80"

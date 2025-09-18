@@ -6,20 +6,20 @@ on:
     paths:
       - "docker-compose.yml"
       - "FINANCIAL_APP/**"
+      - "financial_app/**"
       - ".github/workflows/compose-ci.yml"
   pull_request:
     branches: [ "**" ]
     paths:
       - "docker-compose.yml"
       - "FINANCIAL_APP/**"
+      - "financial_app/**"
       - ".github/workflows/compose-ci.yml"
   workflow_dispatch:
 
 jobs:
   compose-build:
     runs-on: ubuntu-latest
-
-    # ให้ทุก step ทำงานที่รากรีโปเสมอ (กันพาธเพี้ยน)
     defaults:
       run:
         working-directory: ${{ github.workspace }}
@@ -28,13 +28,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ดูโครงสร้างโฟลเดอร์บน runner (ช่วยดีบักชื่อโฟลเดอร์ตัวใหญ่/เล็ก)
-      - name: Debug paths
+      # ตรวจหาพาธที่มีอยู่จริง แล้วตั้ง ENV ให้ compose ใช้
+      - name: Detect project paths
         run: |
-          pwd
-          ls -la
-          ls -la FINANCIAL_APP || true
-          ls -la FINANCIAL_APP/my-banking-app || true
+          echo "PWD=$(pwd)"
+          ls -la || true
+
+          # FRONTEND
+          if [ -d FINANCIAL_APP/my-banking-app ]; then
+            echo "✅ found: FINANCIAL_APP/my-banking-app"
+            echo "FRONTEND_CONTEXT=./FINANCIAL_APP/my-banking-app" >> $GITHUB_ENV
+          elif [ -d financial_app/my-banking-app ]; then
+            echo "✅ found: financial_app/my-banking-app"
+            echo "FRONTEND_CONTEXT=./financial_app/my-banking-app" >> $GITHUB_ENV
+          else
+            echo "❌ frontend path not found"
+            echo "Tree:"; ls -R | sed -n '1,200p'
+            exit 1
+          fi
+
+          # BACKEND (แม้เรายังไม่ build แต่กันไว้ก่อน)
+          if [ -d back-end/demo/demo ]; then
+            echo "BACKEND_CONTEXT=./back-end/demo/demo" >> $GITHUB_ENV
+          elif [ -d BACK-END/demo/demo ]; then
+            echo "BACKEND_CONTEXT=./BACK-END/demo/demo" >> $GITHUB_ENV
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
