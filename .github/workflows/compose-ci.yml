@@ -24,7 +24,6 @@ jobs:
       - name: Checkout this repo (compose)
         uses: actions/checkout@v4
 
-      # ดึง frontend repo มาไว้ที่ FINANCIAL_APP/my-banking-app
       - name: Checkout frontend repo
         uses: actions/checkout@v4
         with:
@@ -32,7 +31,6 @@ jobs:
           ref: main
           path: FINANCIAL_APP/my-banking-app
 
-      # ดึง backend repo มาไว้ที่ back-end/demo/demo
       - name: Checkout backend repo
         uses: actions/checkout@v4
         with:
@@ -44,8 +42,8 @@ jobs:
         run: |
           echo "PWD=$(pwd)"
           ls -R | head -n 100
-          test -d FINANCIAL_APP/my-banking-app || (echo "❌ missing FINANCIAL_APP/my-banking-app" && exit 1)
-          test -d back-end/demo/demo || (echo "❌ missing back-end/demo/demo" && exit 1)
+          test -d FINANCIAL_APP/my-banking-app || (echo "missing FINANCIAL_APP/my-banking-app" && exit 1)
+          test -d back-end/demo/demo || (echo "missing back-end/demo/demo" && exit 1)
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
