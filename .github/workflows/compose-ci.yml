@@ -1,0 +1,56 @@
+name: Compose CI (frontend build only)
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "docker-compose.yml"
+      - ".github/workflows/compose-ci.yml"
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "docker-compose.yml"
+      - ".github/workflows/compose-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  compose-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+
+    steps:
+      - name: "Checkout this repo (compose)"
+        uses: actions/checkout@v4
+
+      - name: "Checkout frontend repo"
+        uses: actions/checkout@v4
+        with:
+          repository: ItsMePince/financial_app
+          ref: main
+          path: FINANCIAL_APP
+
+      - name: "Checkout backend repo"
+        uses: actions/checkout@v4
+        with:
+          repository: ItsMePince/back-end
+          ref: main
+          path: back-end
+
+      - name: "Preflight - verify directories exist"
+        shell: bash
+        run: |
+          echo "PWD=$(pwd)"; ls -la
+          # ต้องมี Dockerfile ตามตำแหน่งนี้ทั้งคู่
+          test -f FINANCIAL_APP/my-banking-app/Dockerfile || (echo "missing FINANCIAL_APP/my-banking-app/Dockerfile" && exit 1)
+          test -f back-end/demo/demo/Dockerfile         || (echo "missing back-end/demo/demo/Dockerfile" && exit 1)
+
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+
+      - name: "Validate docker-compose"
+        run: docker compose -f "${{ github.workspace }}/docker-compose.yml" config
+
+      - name: "Build frontend service"
+        run: docker compose -f "${{ github.workspace }}/docker-compose.yml" --progress=plain build frontend
