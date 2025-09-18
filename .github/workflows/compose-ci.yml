@@ -11,7 +11,7 @@ on:
     branches: [ "**" ]
     paths:
       - "docker-compose.yml"
-      - "financial_app/**"
+      - "FINANCIAL_APP/**"
       - ".github/workflows/compose-ci.yml"
   workflow_dispatch:
 
@@ -19,15 +19,28 @@ jobs:
   compose-build:
     runs-on: ubuntu-latest
 
+    # ให้ทุก step ทำงานที่รากรีโปเสมอ (กันพาธเพี้ยน)
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # ดูโครงสร้างโฟลเดอร์บน runner (ช่วยดีบักชื่อโฟลเดอร์ตัวใหญ่/เล็ก)
+      - name: Debug paths
+        run: |
+          pwd
+          ls -la
+          ls -la FINANCIAL_APP || true
+          ls -la FINANCIAL_APP/my-banking-app || true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Validate docker-compose
-        run: docker compose -f docker-compose.yml config
+        run: docker compose --project-directory ${{ github.workspace }} -f ${{ github.workspace }}/docker-compose.yml config
 
       - name: Build frontend service
-        run: docker compose -f docker-compose.yml build --progress=plain frontend
+        run: docker compose --project-directory ${{ github.workspace }} -f ${{ github.workspace }}/docker-compose.yml --progress=plain build frontend
