@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           echo "PWD=$(pwd)"
-          ls -R | head -n 100
+          ls -la
           if [ ! -d FINANCIAL_APP/my-banking-app ]; then
             echo "missing FINANCIAL_APP/my-banking-app"; exit 1
           fi
