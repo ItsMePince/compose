@@ -1,0 +1,33 @@
+name: Compose CI (frontend build only)
+
+on:
+  push:
+    branches: [ "**" ]
+    paths:
+      - "docker-compose.yml"
+      - "financial_app/**"
+      - ".github/workflows/compose-ci.yml"
+  pull_request:
+    branches: [ "**" ]
+    paths:
+      - "docker-compose.yml"
+      - "financial_app/**"
+      - ".github/workflows/compose-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  compose-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate docker-compose
+        run: docker compose -f docker-compose.yml config
+
+      - name: Build frontend service
+        run: docker compose -f docker-compose.yml build --progress=plain frontend
